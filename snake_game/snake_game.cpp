@@ -47,17 +47,21 @@ enum eDirection
 eDirection direction = eDirection::stop;
 eDirection previous_direction = eDirection::stop;
 
+enum eColor
+{
+	black = 0, blue = 1, green = 2, light_blue = 3, red = 4, pink = 5, yellow = 6, white = 7, dark_white=8
+};
 
-																							//Colors: 
-void set_color(int ForgC)																	// 
-{																							//set_color(0);  black
-	WORD wColor;																			//set_color(1);  blue
-	//This handle is needed to get the current background attribute							//set_color(2);  green
-																							//set_color(3);  light-blue
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);										//set_color(4);  red
-	CONSOLE_SCREEN_BUFFER_INFO csbi;														//set_color(5);  pink
-	//csbi is used for wAttributes word														//set_color(6);  yellow
-																							//set_color(7);  white
+																							 
+void set_color(int ForgC)																	 
+{																							
+	WORD wColor;																			
+	//This handle is needed to get the current background attribute							
+																							
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);										
+	CONSOLE_SCREEN_BUFFER_INFO csbi;														
+	//csbi is used for wAttributes word														
+																							
 	if (GetConsoleScreenBufferInfo(hStdOut, &csbi))
 	{
 		//To mask out all but the background attribute, and to add the color
@@ -124,7 +128,7 @@ void draw_map()
 
 			if (Map[i][j] == -1)						//-1 is code of borders
 			{
-				set_color(3);
+				set_color(light_blue);
 				cout << char(178);
 			}
 			if (Map[i][j] == 0)							//0 is code of empty icon
@@ -134,9 +138,13 @@ void draw_map()
 			}
 			if ((Map[i][j] == snakebody_size))			//code of snake head that equls to snakebody_size
 			{
-				set_color(6);
+				set_color(yellow);
 				cout << '0';
-
+			}
+			if ((Map[i][j] < snakebody_size) && (Map[i][j] > 0)) // codes of snake tail
+			{	
+				set_color(yellow);
+				cout << 'o';
 			}
 			if ((i == fruit_y) && (j == fruit_x))
 			{
@@ -144,39 +152,34 @@ void draw_map()
 				cout << char(abs(Map[fruit_y][fruit_x]));
 
 			}
-			if ((Map[i][j] < snakebody_size) && (Map[i][j] > 0)) // codes of snake tail
-			{
-				set_color(6);
-				cout << 'o';
-
-			}
 
 		}
 		cout << endl;
 	}
+}
 
-	// drawing  rules and control-keys
-	set_color(8);
+void draw_rules_and_score()
+{
+	set_color(dark_white);
 	set_cursor_position(30, 1);
 	cout << "Your Snake is located in centre of map";
 	set_cursor_position(30, 2);
 	cout << "Speed will be increasing during the game";
 	set_cursor_position(30, 5);
-	cout << "Press"; set_color(4); cout << " W "; set_color(8); cout << "to move Up";
+	cout << "Press"; set_color(red); cout << " W "; set_color(dark_white); cout << "to move Up";
 	set_cursor_position(30, 6);
-	cout << "Press"; set_color(4); cout << " A "; set_color(8); cout << "to move Left";
+	cout << "Press"; set_color(red); cout << " A "; set_color(dark_white); cout << "to move Left";
 	set_cursor_position(30, 7);
-	cout << "Press"; set_color(4); cout << " S "; set_color(8); cout << "to move Down";
+	cout << "Press"; set_color(red); cout << " S "; set_color(dark_white); cout << "to move Down";
 	set_cursor_position(30, 8);
-	cout << "Press"; set_color(4); cout << " D "; set_color(8); cout << "to move Right";
+	cout << "Press"; set_color(red); cout << " D "; set_color(dark_white); cout << "to move Right";
 	set_cursor_position(30, 10);
-	cout << "Press"; set_color(4); cout << " X "; set_color(8); cout << "twice to Exit Game";
+	cout << "Press"; set_color(red); cout << " X "; set_color(dark_white); cout << "twice to Exit Game";
 
 
-	//drawing score
-	set_color(6);
+	set_color(yellow);
 	set_cursor_position(30, 12);
-	cout << "Score "; set_color(8); cout << " = "; set_color(6); cout << (snakebody_size - 1) * 10;
+	cout << "Score "; set_color(dark_white); cout << " = "; set_color(yellow); cout << (snakebody_size - 1) * 10;
 	set_cursor_position(0, 25);
 }
 
@@ -244,7 +247,7 @@ void input()
 		{
 			game_is_over = true;
 			system("cls");
-			set_color(0);
+			set_color(black);
 			exit(0);
 			break;
 		}
@@ -346,12 +349,13 @@ void game_over_scene()
 {
 	system("cls");
 	set_cursor_position(50, 10);
+	set_color(yellow); 
 	cout << "Game is Over";
 	set_cursor_position(45, 12);
-	set_color(8);
-	cout << "Press"; set_color(4); cout << " R "; set_color(8); cout << "to Restart Game";
+	set_color(dark_white);
+	cout << "Press"; set_color(red); cout << " R "; set_color(dark_white); cout << "to Restart Game";
 	set_cursor_position(45, 13);
-	cout << "Press"; set_color(4); cout << " X "; set_color(8); cout << "twice to Exit Game";
+	cout << "Press"; set_color(red); cout << " X "; set_color(dark_white); cout << "twice to Exit Game";
 	Beep(523.25, 750);
 	Beep(493.88, 800);
 	Beep(466.16, 1000);
@@ -371,9 +375,8 @@ void choice_request()
 	
 		case 'x':
 		{
-			set_color(0);
+			set_color(black);
 			exit(0);
-			break;
 		}
 		default:
 		{
@@ -394,6 +397,7 @@ int main()
 	{
 		blocker = 0;
 		draw_map();
+		draw_rules_and_score();
 
 		while (!(game_is_over))
 		{
